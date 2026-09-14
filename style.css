@@ -100,15 +100,21 @@ a { color: var(--accent); }
   font-family: var(--font-mono);
   font-size: 0.95rem;
   display: flex;
-  gap: 22px;
-  flex-wrap: wrap;
-  align-items: baseline;
+  flex-direction: column;
+  gap: 8px;
   border-bottom: 1px solid var(--line);
 }
+.countdown-strip .cd-item {
+  display: flex;
+  align-items: baseline;
+  gap: 14px;
+  flex-wrap: wrap;
+}
 .countdown-strip .cd-days {
-  font-size: 1.5rem;
+  font-size: 1.3rem;
   font-weight: 600;
   color: var(--exam-red);
+  min-width: 3.2em;
 }
 .countdown-strip .cd-empty { color: var(--ink-soft); }
 
@@ -247,6 +253,29 @@ main {
   margin: 0;
   min-width: 220px;
   text-align: center;
+}
+.month-tabs {
+  display: flex;
+  justify-content: center;
+  gap: 6px;
+  margin-bottom: 14px;
+}
+.month-tab {
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  font-weight: 600;
+  padding: 5px 12px;
+  border-radius: 20px;
+  border: 1.5px solid var(--line);
+  background: var(--paper-dim);
+  color: var(--ink-soft);
+  cursor: pointer;
+}
+.month-tab:hover { border-color: var(--accent); color: var(--ink); }
+.month-tab.active {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--paper);
 }
 .calendar-grid {
   display: grid;

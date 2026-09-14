@@ -1,23 +1,24 @@
-# Syllabus Hub — Fall 2026
+# The Binder — Fall 2026
 
 A calendar + planner for your four Fall 2026 courses (Futures Past, Asian
 American Digital Culture, Intro to Comparative Politics, Behavior Disorders),
 built from the syllabi. Pure HTML/CSS/JS — no build step, no server.
 
 **Live features**
-- Month-by-month calendar (Aug–Dec 2026) color-coded by course
-- Full chronological list view — now includes the weekly reading/topic
+- Month-by-month calendar (Aug–Dec 2026) color-coded by course, with quick-jump
+  month tabs (Aug/Sep/Oct/Nov/Dec) above the grid so you're never stuck on
+  one month
+- Full chronological list view — includes the weekly reading/topic
   schedule for all four courses, not just assignments and exams
 - A planner/checklist (assignments + exams + reading, auto-populated, check
-  things off, add your own tasks) — saved in your browser via `localStorage`
+  things off, add your own tasks) — saved in your browser via `localStorage`.
+  Each item shows its reading citation (e.g. "Craighead 3") right under the
+  title, and a "Course info & required textbooks" panel above the calendar
+  spells out what those citations refer to
 - **Edit tab**: change or remove any date, title, detail, or event type, add
   brand-new events, and edit course info (name, instructor, room, meeting
   time, color) — all directly on the site, no code editing required. Saved
   in your browser via `localStorage`.
-- **Export to Apple Calendar**: click "Export to Apple Calendar (.ics)" in the
-  header to download a file (including anything you've changed in the Edit
-  tab) that you can double-click to import into Calendar, or AirDrop to your
-  phone
 
 All the original due dates live in **`data.js`**. A few dates are marked
 `TBA` as placeholders (final exam dates not yet announced) — once the real
@@ -69,14 +70,6 @@ If you'd rather change the underlying data everyone gets by default (e.g.
 before sharing the link with classmates), you can still click into `data.js`
 on GitHub, hit the pencil icon, edit the line, and commit — the live site
 updates automatically within a minute or two.
-
-## Exporting to Apple Calendar
-
-Click **"Export to Apple Calendar (.ics)"** on the site — this includes any
-edits or additions you've made in the Edit tab. On a Mac this opens Calendar
-directly; on iPhone, tap the download, then "Add All" when Calendar prompts
-you. This is a one-time snapshot — if you edit things later (in the Edit tab
-or in `data.js`), re-export and re-import to pick up the changes.
 
 ## Double-check against Brightspace
 

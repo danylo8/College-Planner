@@ -173,6 +173,25 @@ const EVENTS = [
   { course: "plsc", date: "2026-12-08", type: "note", title: "Review day", detail: "Week 17 — review before Exam #3." },
   { course: "plsc", date: "2026-12-15", type: "exam", title: "Exam #3 (date TBA — placeholder)", detail: "Held during scheduled final-exam period; update once announced." },
 
+  // Weekly Pen Pal letters (15% of grade) — one letter due every Thursday.
+  // Per syllabus this technically alternates who "sends" (Tue) vs "responds"
+  // (Thu), swapping at mid-semester, but you asked for a standing Thursday
+  // reminder, so this marks the Thursday side of the exchange each week.
+  { course: "futures", date: "2026-08-20", type: "assignment", title: "Pen Pal letter due", detail: "Weekly reading correspondence — about half a page, in your shared Google doc." },
+  { course: "futures", date: "2026-08-27", type: "assignment", title: "Pen Pal letter due", detail: "Weekly reading correspondence — about half a page, in your shared Google doc." },
+  { course: "futures", date: "2026-09-03", type: "assignment", title: "Pen Pal letter due", detail: "Weekly reading correspondence — about half a page, in your shared Google doc." },
+  { course: "futures", date: "2026-09-10", type: "assignment", title: "Pen Pal letter due", detail: "Weekly reading correspondence — about half a page, in your shared Google doc." },
+  { course: "futures", date: "2026-09-17", type: "assignment", title: "Pen Pal letter due", detail: "Weekly reading correspondence — about half a page, in your shared Google doc." },
+  { course: "futures", date: "2026-09-24", type: "assignment", title: "Pen Pal letter due", detail: "Weekly reading correspondence — about half a page, in your shared Google doc." },
+  { course: "futures", date: "2026-10-01", type: "assignment", title: "Pen Pal letter due", detail: "Weekly reading correspondence — about half a page, in your shared Google doc." },
+  { course: "futures", date: "2026-10-08", type: "assignment", title: "Pen Pal letter due", detail: "Weekly reading correspondence — about half a page, in your shared Google doc." },
+  { course: "futures", date: "2026-10-22", type: "assignment", title: "Pen Pal letter due", detail: "Weekly reading correspondence — about half a page, in your shared Google doc." },
+  { course: "futures", date: "2026-10-29", type: "assignment", title: "Pen Pal letter due", detail: "Weekly reading correspondence — about half a page, in your shared Google doc." },
+  { course: "futures", date: "2026-11-05", type: "assignment", title: "Pen Pal letter due", detail: "Weekly reading correspondence — about half a page, in your shared Google doc." },
+  { course: "futures", date: "2026-11-12", type: "assignment", title: "Pen Pal letter due", detail: "Weekly reading correspondence — about half a page, in your shared Google doc." },
+  { course: "futures", date: "2026-11-19", type: "assignment", title: "Pen Pal letter due", detail: "Weekly reading correspondence — about half a page, in your shared Google doc." },
+  { course: "futures", date: "2026-12-03", type: "assignment", title: "Pen Pal letter due", detail: "Weekly reading correspondence — about half a page, in your shared Google doc." },
+
   // ---------------- PSYC 223 — Behavior Disorders ----------------
   { course: "psyc", date: "2026-08-19", type: "note", title: "Introduction, Defining Behavior Disorders", detail: "Class #1." },
   { course: "psyc", date: "2026-08-21", type: "reading", title: "Defining Behavior Disorders", detail: "Class #2. Reading: Craighead 1." },

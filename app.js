@@ -186,13 +186,20 @@ function renderCountdown() {
     el.innerHTML = `<span class="cd-empty">No upcoming deadlines for the selected course(s).</span>`;
     return;
   }
-  const next = upcoming[0];
-  const days = Math.round((new Date(next.date) - new Date(today)) / 86400000);
-  const course = courseById(next.course);
-  el.innerHTML = `
-    <span class="cd-days">T–${days}</span>
-    <span>day${days === 1 ? "" : "s"} until <strong style="color:${course.color}">${course.code}</strong>: ${next.title} (${formatDate(next.date)})</span>
-  `;
+
+  const showingAll = state.activeCourses.size === COURSES.length;
+  const count = showingAll ? Math.min(4, upcoming.length) : 1;
+
+  el.innerHTML = upcoming.slice(0, count).map(next => {
+    const days = Math.round((new Date(next.date) - new Date(today)) / 86400000);
+    const course = courseById(next.course);
+    return `
+      <div class="cd-item">
+        <span class="cd-days">T–${days}</span>
+        <span>day${days === 1 ? "" : "s"} until <strong style="color:${course.color}">${course.code}</strong>: ${next.title} (${formatDate(next.date)})</span>
+      </div>
+    `;
+  }).join("");
 }
 
 function formatDate(iso) {
@@ -206,9 +213,23 @@ function formatDate(iso) {
 const TYPE_PRIORITY = { exam: 0, assignment: 1, reading: 2, note: 3 };
 const MAX_CAL_ITEMS = 4;
 
+function renderMonthTabs() {
+  const wrap = document.getElementById("month-tabs");
+  wrap.innerHTML = MONTHS.map((m, i) =>
+    `<button class="month-tab ${i === state.monthIndex ? "active" : ""}" data-month-index="${i}">${MONTH_NAMES[m.month].slice(0, 3)}</button>`
+  ).join("");
+  wrap.querySelectorAll(".month-tab").forEach(btn => {
+    btn.addEventListener("click", () => {
+      state.monthIndex = Number(btn.dataset.monthIndex);
+      renderCalendar();
+    });
+  });
+}
+
 function renderCalendar() {
   const { year, month } = MONTHS[state.monthIndex];
   document.getElementById("month-label").textContent = `${MONTH_NAMES[month]} ${year}`;
+  renderMonthTabs();
 
   const grid = document.getElementById("calendar-grid");
   grid.innerHTML = "";
@@ -414,73 +435,6 @@ document.getElementById("month-prev").addEventListener("click", () => {
 document.getElementById("month-next").addEventListener("click", () => {
   state.monthIndex = Math.min(MONTHS.length - 1, state.monthIndex + 1);
   renderCalendar();
-});
-
-// ---------------------------------------------------------------
-// ICS export
-// ---------------------------------------------------------------
-function pad(n) { return String(n).padStart(2, "0"); }
-
-function icsDateAllDay(iso) {
-  return iso.replace(/-/g, "");
-}
-function icsDateNextDay(iso) {
-  const d = new Date(iso + "T00:00:00");
-  d.setDate(d.getDate() + 1);
-  return `${d.getFullYear()}${pad(d.getMonth() + 1)}${pad(d.getDate())}`;
-}
-function icsDateTime(iso, time) {
-  const [h, m] = time.split(":");
-  return `${iso.replace(/-/g, "")}T${pad(h)}${pad(m)}00`;
-}
-function escapeICS(str) {
-  return String(str).replace(/([,;])/g, "\\$1").replace(/\n/g, "\\n");
-}
-
-function buildICS(events) {
-  const lines = [
-    "BEGIN:VCALENDAR",
-    "VERSION:2.0",
-    "PRODID:-//Syllabus Hub//Fall 2026//EN",
-    "CALSCALE:GREGORIAN",
-  ];
-  const stamp = new Date().toISOString().replace(/[-:]/g, "").split(".")[0] + "Z";
-
-  events.forEach(e => {
-    const course = courseById(e.course);
-    const uid = `${eventKey(e).replace(/[^a-zA-Z0-9]/g, "-")}@syllabus-hub`;
-    lines.push("BEGIN:VEVENT");
-    lines.push(`UID:${uid}`);
-    lines.push(`DTSTAMP:${stamp}`);
-    if (e.time) {
-      lines.push(`DTSTART:${icsDateTime(e.date, e.time)}`);
-      lines.push(`DTEND:${icsDateTime(e.date, e.time)}`);
-    } else {
-      lines.push(`DTSTART;VALUE=DATE:${icsDateAllDay(e.date)}`);
-      lines.push(`DTEND;VALUE=DATE:${icsDateNextDay(e.date)}`);
-    }
-    lines.push(`SUMMARY:${escapeICS(`[${course.code}] ${e.title}`)}`);
-    const desc = [e.detail, `Course: ${course.name} (${course.code})`].filter(Boolean).join("\\n");
-    lines.push(`DESCRIPTION:${escapeICS(desc)}`);
-    lines.push(`CATEGORIES:${escapeICS(course.code)}`);
-    lines.push("END:VEVENT");
-  });
-
-  lines.push("END:VCALENDAR");
-  return lines.join("\r\n");
-}
-
-document.getElementById("btn-export").addEventListener("click", () => {
-  const ics = buildICS(getWorkingEvents()); // includes any edits/additions made in the Edit tab
-  const blob = new Blob([ics], { type: "text/calendar;charset=utf-8" });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = "syllabus.ics";
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
-  URL.revokeObjectURL(url);
 });
 
 // ---------------------------------------------------------------

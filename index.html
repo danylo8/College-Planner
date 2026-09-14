@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Fall 2026 — Syllabus Hub</title>
+<title>The Binder — Fall 2026</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,700;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
@@ -15,10 +15,7 @@
   <div class="topbar-inner">
     <div class="brand">
       <span class="brand-eyebrow">Binghamton University · Fall 2026</span>
-      <h1>Syllabus Hub</h1>
-    </div>
-    <div class="topbar-actions">
-      <button id="btn-export" class="btn btn-primary">Export to Apple Calendar (.ics)</button>
+      <h1>The Binder</h1>
     </div>
   </div>
 </header>
@@ -52,6 +49,7 @@
       <h2 id="month-label"></h2>
       <button id="month-next" class="btn btn-ghost" aria-label="Next month">→</button>
     </div>
+    <div class="month-tabs" id="month-tabs"><!-- filled by JS: Aug–Dec quick-jump buttons --></div>
     <div class="calendar-grid" id="calendar-grid"></div>
     <div class="day-detail" id="day-detail">
       <p class="muted">Click a date to see what's due.</p>
@@ -126,9 +124,6 @@
 
 </main>
 
-<footer>
-  <p>Built from your four Fall 2026 syllabi. Dates marked "TBA" are placeholders — head to the <strong>Edit</strong> tab to fill in the real date once it's announced. Always double-check against Brightspace.</p>
-</footer>
 
 <script src="data.js"></script>
 <script src="app.js"></script>
