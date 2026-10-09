@@ -95,6 +95,21 @@
       <button id="btn-reset-edits" class="btn btn-ghost btn-small">Reset all my edits</button>
     </div>
 
+    <h3>Email reminders</h3>
+    <div class="reminder-box">
+      <p class="muted">Get one email each morning (~7am) listing everything that's due today or overdue and not checked off yet. Check an item off in the Planner and it drops out of the emails. One-time setup takes about 5 minutes — see <code>email-reminders/SETUP.md</code>, then paste the two values it gives you here.</p>
+      <div class="reminder-fields">
+        <label>Web app URL<input type="url" id="reminder-url" placeholder="https://script.google.com/macros/s/…/exec" autocomplete="off"></label>
+        <label>Secret<input type="password" id="reminder-secret" placeholder="the SECRET from Code.gs" autocomplete="off"></label>
+      </div>
+      <div class="reminder-actions">
+        <button type="button" id="btn-reminder-save" class="btn btn-primary btn-small">Save &amp; sync</button>
+        <button type="button" id="btn-reminder-test" class="btn btn-ghost btn-small">Send test email</button>
+        <button type="button" id="btn-reminder-off" class="btn btn-ghost btn-small">Turn off</button>
+      </div>
+      <div id="reminder-status" class="reminder-status" aria-live="polite"></div>
+    </div>
+
     <h3>Courses</h3>
     <div id="edit-courses" class="edit-courses"></div>
 

@@ -86,8 +86,12 @@ function escapeAttr(s) {
 }
 
 function todayISO() {
+  // Local date (not UTC) so "today"/"overdue" flips at local midnight,
+  // not at ~8pm Eastern.
   const d = new Date();
-  return d.toISOString().slice(0, 10);
+  const mm = String(d.getMonth() + 1).padStart(2, "0");
+  const dd = String(d.getDate()).padStart(2, "0");
+  return `${d.getFullYear()}-${mm}-${dd}`;
 }
 
 // ---------------------------------------------------------------
@@ -103,6 +107,7 @@ function getDoneSet() {
 }
 function saveDoneSet(set) {
   localStorage.setItem(LS_DONE_KEY, JSON.stringify([...set]));
+  scheduleReminderSync();
 }
 function getCustomTasks() {
   try { return JSON.parse(localStorage.getItem(LS_CUSTOM_KEY)) || []; }
@@ -110,6 +115,7 @@ function getCustomTasks() {
 }
 function saveCustomTasks(tasks) {
   localStorage.setItem(LS_CUSTOM_KEY, JSON.stringify(tasks));
+  scheduleReminderSync();
 }
 
 // ---------------------------------------------------------------
@@ -604,6 +610,114 @@ document.getElementById("btn-reset-edits").addEventListener("click", () => {
 });
 
 // ---------------------------------------------------------------
+// Email reminders
+// The site can't send email itself, so it pushes a snapshot (tasks +
+// what's checked off) to a small Google Apps Script (see
+// email-reminders/SETUP.md). That script emails a daily digest of
+// anything due/overdue that isn't checked off. The URL + secret are
+// stored only in this browser (localStorage), never in the repo.
+// ---------------------------------------------------------------
+const LS_REMINDER_CFG_KEY = "syllabusHub.reminderConfig";   // { url, secret }
+const LS_REMINDER_LAST_KEY = "syllabusHub.reminderLastSent"; // last snapshot we pushed
+
+function getReminderConfig() {
+  try { return JSON.parse(localStorage.getItem(LS_REMINDER_CFG_KEY)) || {}; }
+  catch { return {}; }
+}
+
+function buildReminderPayload() {
+  const tasks = getWorkingEvents()
+    .filter(e => PLANNER_TYPES.includes(e.type))
+    .map(e => {
+      const c = courseById(e.course);
+      return {
+        key: eventKey(e),
+        title: e.title,
+        detail: String(e.detail || "").slice(0, 160),
+        date: e.date,
+        course: c ? c.code : "",
+        type: e.type,
+      };
+    });
+  getCustomTasks().forEach(t => {
+    tasks.push({ key: `custom__${t.id}`, title: t.title, detail: "", date: t.date, course: "Your task", type: "task" });
+  });
+  return { tasks, done: [...getDoneSet()] };
+}
+
+function setReminderStatus(msg, isError) {
+  const el = document.getElementById("reminder-status");
+  if (!el) return;
+  el.textContent = msg || "";
+  el.classList.toggle("error", !!isError);
+}
+
+// Returns { ok: true|false|null, message }. ok === null means the request
+// went out but the browser wasn't allowed to read the reply.
+async function postToReminders(action) {
+  const cfg = getReminderConfig();
+  if (!cfg.url || !cfg.secret) return { ok: false, message: "Add your web app URL and secret first." };
+  const body = JSON.stringify({ token: cfg.secret, action, ...buildReminderPayload() });
+  try {
+    // A plain string body goes out as text/plain, which avoids a CORS preflight
+    // (Apps Script web apps don't answer preflights).
+    const res = await fetch(cfg.url, { method: "POST", body });
+    return await res.json();
+  } catch (err) {
+    return { ok: null, message: "Sent, but your browser couldn't read the reply. Check your inbox or the script's Executions page." };
+  }
+}
+
+let reminderSyncTimer = null;
+function scheduleReminderSync() {
+  const cfg = getReminderConfig();
+  if (!cfg.url || !cfg.secret) return;
+  clearTimeout(reminderSyncTimer);
+  reminderSyncTimer = setTimeout(async () => {
+    const snapshot = JSON.stringify(buildReminderPayload());
+    if (snapshot === localStorage.getItem(LS_REMINDER_LAST_KEY)) return; // nothing changed
+    const result = await postToReminders("sync");
+    if (result.ok !== false) localStorage.setItem(LS_REMINDER_LAST_KEY, snapshot);
+    setReminderStatus(result.message, result.ok === false);
+  }, 1500);
+}
+
+function initReminderSettings() {
+  const urlEl = document.getElementById("reminder-url");
+  const secretEl = document.getElementById("reminder-secret");
+  const cfg = getReminderConfig();
+  urlEl.value = cfg.url || "";
+  secretEl.value = cfg.secret || "";
+  if (cfg.url) setReminderStatus("Reminders are on — changes sync automatically.");
+
+  document.getElementById("btn-reminder-save").addEventListener("click", async () => {
+    const url = urlEl.value.trim();
+    const secret = secretEl.value.trim();
+    if (!url || !secret) { setReminderStatus("Enter both the web app URL and the secret.", true); return; }
+    localStorage.setItem(LS_REMINDER_CFG_KEY, JSON.stringify({ url, secret }));
+    localStorage.removeItem(LS_REMINDER_LAST_KEY);
+    setReminderStatus("Syncing…");
+    const result = await postToReminders("sync");
+    if (result.ok !== false) localStorage.setItem(LS_REMINDER_LAST_KEY, JSON.stringify(buildReminderPayload()));
+    setReminderStatus(result.message, result.ok === false);
+  });
+
+  document.getElementById("btn-reminder-test").addEventListener("click", async () => {
+    setReminderStatus("Sending test email…");
+    const result = await postToReminders("test");
+    setReminderStatus(result.message, result.ok === false);
+  });
+
+  document.getElementById("btn-reminder-off").addEventListener("click", () => {
+    localStorage.removeItem(LS_REMINDER_CFG_KEY);
+    localStorage.removeItem(LS_REMINDER_LAST_KEY);
+    urlEl.value = "";
+    secretEl.value = "";
+    setReminderStatus("Turned off on this browser. (To stop the emails entirely, delete the trigger in your Apps Script project.)");
+  });
+}
+
+// ---------------------------------------------------------------
 // Init
 // ---------------------------------------------------------------
 function renderAll() {
@@ -611,5 +725,7 @@ function renderAll() {
   renderCourseInfo();
   renderCountdown();
   renderActiveView();
+  scheduleReminderSync();
 }
+initReminderSettings();
 renderAll();

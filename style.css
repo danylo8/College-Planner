@@ -560,6 +560,50 @@ footer code {
 #view-edit h3 { font-family: var(--font-display); margin: 26px 0 12px; }
 #view-edit h3:first-of-type { margin-top: 0; }
 
+.reminder-box {
+  border: 1.5px solid var(--line);
+  border-radius: 6px;
+  padding: 14px 16px;
+  background: var(--paper-dim);
+}
+.reminder-box p { margin: 0 0 12px; }
+.reminder-fields {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+.reminder-fields label {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--ink-soft);
+}
+.reminder-fields input {
+  font-family: var(--font-body);
+  font-size: 0.85rem;
+  text-transform: none;
+  letter-spacing: normal;
+  padding: 7px 9px;
+  border: 1.5px solid var(--line);
+  border-radius: 3px;
+  background: var(--paper);
+}
+.reminder-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+.reminder-status {
+  margin-top: 10px;
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  color: var(--ink-soft);
+  min-height: 1.1em;
+}
+.reminder-status.error { color: var(--exam-red); font-weight: 600; }
+@media (max-width: 640px) { .reminder-fields { grid-template-columns: 1fr; } }
+
 .edit-courses {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
