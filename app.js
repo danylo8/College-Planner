@@ -652,60 +652,141 @@ function setReminderStatus(msg, isError) {
   el.classList.toggle("error", !!isError);
 }
 
-// Returns { ok: true|false|null, message }. ok === null means the request
-// went out but the browser wasn't allowed to read the reply.
-async function postToReminders(action) {
+const sleep = (ms) => new Promise(r => setTimeout(r, ms));
+
+// Read the script's status via JSONP (a <script> tag). Unlike fetch, this works
+// from any website without CORS, and it's how we confirm the script really got
+// what we sent. Rejects on network failure or if the reply isn't JSONP
+// (wrong URL, deployment not set to "Anyone", or an old Code.gs).
+function jsonpGet(baseUrl, timeoutMs = 7000) {
+  return new Promise((resolve, reject) => {
+    const cb = "__binderCb" + Date.now().toString(36) + Math.floor(Math.random() * 1e6);
+    const script = document.createElement("script");
+    let timer;
+    const cleanup = () => { clearTimeout(timer); delete window[cb]; script.remove(); };
+    window[cb] = (data) => { cleanup(); resolve(data); };
+    script.onerror = () => { cleanup(); reject(new Error("network")); };
+    timer = setTimeout(() => { cleanup(); reject(new Error("timeout")); }, timeoutMs);
+    script.src = `${baseUrl}${baseUrl.includes("?") ? "&" : "?"}callback=${cb}&_=${Date.now()}`;
+    document.head.appendChild(script);
+  });
+}
+
+const UNREACHABLE_HELP =
+  "Couldn't reach your script. Check that (1) the URL is the Web app URL ending in /exec, " +
+  "(2) the deployment's \"Who has access\" is set to Anyone, and (3) you pasted the newest Code.gs " +
+  "and redeployed (Deploy → Manage deployments → pencil → New version).";
+
+// Sends a request, then asks the script what it recorded.
+// Returns { ok: boolean, message }. ok is only true if the script confirmed it.
+async function sendToReminders(action) {
   const cfg = getReminderConfig();
   if (!cfg.url || !cfg.secret) return { ok: false, message: "Add your web app URL and secret first." };
+
+  let before;
+  try { before = await jsonpGet(cfg.url); }
+  catch (err) { return { ok: false, message: UNREACHABLE_HELP }; }
+
   const body = JSON.stringify({ token: cfg.secret, action, ...buildReminderPayload() });
   try {
-    // A plain string body goes out as text/plain, which avoids a CORS preflight
-    // (Apps Script web apps don't answer preflights).
-    const res = await fetch(cfg.url, { method: "POST", body });
-    return await res.json();
+    // no-cors + plain-string body = a "simple" request the browser will always send
+    // (we can't read the reply, which is why we confirm via jsonpGet below).
+    await fetch(cfg.url, { method: "POST", mode: "no-cors", body });
   } catch (err) {
-    return { ok: null, message: "Sent, but your browser couldn't read the reply. Check your inbox or the script's Executions page." };
+    return { ok: false, message: "Couldn't send — check your internet connection." };
   }
+
+  for (let i = 0; i < 8; i++) {
+    await sleep(i === 0 ? 400 : 900);
+    let st;
+    try { st = await jsonpGet(cfg.url); } catch (err) { continue; }
+    if (st.seq > before.seq) { // the script processed our request
+      const last = st.last || {};
+      if (!last.ok) return { ok: false, message: last.message || "The script rejected the request." };
+      let msg = last.message;
+      if (action === "sync" && st.dailyTrigger === false) {
+        msg += " ⚠ The daily 7am email isn't scheduled yet — run the setup function once in the script editor (SETUP.md step 4).";
+      }
+      return { ok: true, message: msg };
+    }
+  }
+  return {
+    ok: false,
+    message: "Sent, but the script never recorded it. Most likely the SECRET/URL belongs to a different deployment, " +
+      "or you haven't redeployed the newest Code.gs (Deploy → Manage deployments → New version).",
+  };
 }
 
 let reminderSyncTimer = null;
+let reminderSyncBusy = false;
+let reminderFailures = 0;
+const REMINDER_MAX_AUTO_RETRIES = 10;
+const REMINDER_RETRY_MS = 45000;
+
 function scheduleReminderSync() {
   const cfg = getReminderConfig();
   if (!cfg.url || !cfg.secret) return;
   clearTimeout(reminderSyncTimer);
   reminderSyncTimer = setTimeout(async () => {
+    if (reminderSyncBusy) { scheduleReminderSync(); return; }
     const snapshot = JSON.stringify(buildReminderPayload());
-    if (snapshot === localStorage.getItem(LS_REMINDER_LAST_KEY)) return; // nothing changed
-    const result = await postToReminders("sync");
-    if (result.ok !== false) localStorage.setItem(LS_REMINDER_LAST_KEY, snapshot);
-    setReminderStatus(result.message, result.ok === false);
+    if (snapshot === localStorage.getItem(LS_REMINDER_LAST_KEY)) return; // already confirmed synced
+    reminderSyncBusy = true;
+    const result = await sendToReminders("sync");
+    reminderSyncBusy = false;
+    setReminderStatus((result.ok ? "✓ " : "✗ ") + result.message, !result.ok);
+    if (result.ok) {
+      // Only remember it as synced if the script confirmed it.
+      localStorage.setItem(LS_REMINDER_LAST_KEY, snapshot);
+      reminderFailures = 0;
+    } else if (++reminderFailures <= REMINDER_MAX_AUTO_RETRIES) {
+      // Keep trying quietly; a failure should never just sit there.
+      reminderSyncTimer = setTimeout(scheduleReminderSync, REMINDER_RETRY_MS);
+    }
   }, 1500);
 }
+
+// Retry when you come back to the tab or your connection returns.
+document.addEventListener("visibilitychange", () => { if (!document.hidden) scheduleReminderSync(); });
+window.addEventListener("online", scheduleReminderSync);
 
 function initReminderSettings() {
   const urlEl = document.getElementById("reminder-url");
   const secretEl = document.getElementById("reminder-secret");
+  const saveBtn = document.getElementById("btn-reminder-save");
+  const testBtn = document.getElementById("btn-reminder-test");
   const cfg = getReminderConfig();
   urlEl.value = cfg.url || "";
   secretEl.value = cfg.secret || "";
-  if (cfg.url) setReminderStatus("Reminders are on — changes sync automatically.");
+  if (cfg.url) setReminderStatus("Settings saved on this browser. Changes sync automatically.");
 
-  document.getElementById("btn-reminder-save").addEventListener("click", async () => {
+  const setBusy = (busy) => { saveBtn.disabled = busy; testBtn.disabled = busy; };
+
+  saveBtn.addEventListener("click", async () => {
     const url = urlEl.value.trim();
     const secret = secretEl.value.trim();
     if (!url || !secret) { setReminderStatus("Enter both the web app URL and the secret.", true); return; }
     localStorage.setItem(LS_REMINDER_CFG_KEY, JSON.stringify({ url, secret }));
     localStorage.removeItem(LS_REMINDER_LAST_KEY);
-    setReminderStatus("Syncing…");
-    const result = await postToReminders("sync");
-    if (result.ok !== false) localStorage.setItem(LS_REMINDER_LAST_KEY, JSON.stringify(buildReminderPayload()));
-    setReminderStatus(result.message, result.ok === false);
+    reminderFailures = 0;
+    setBusy(true);
+    setReminderStatus("Saved. Syncing…");
+    const result = await sendToReminders("sync");
+    setBusy(false);
+    if (result.ok) localStorage.setItem(LS_REMINDER_LAST_KEY, JSON.stringify(buildReminderPayload()));
+    setReminderStatus((result.ok ? "✓ " : "✗ ") + result.message, !result.ok);
   });
 
-  document.getElementById("btn-reminder-test").addEventListener("click", async () => {
+  testBtn.addEventListener("click", async () => {
+    const url = urlEl.value.trim();
+    const secret = secretEl.value.trim();
+    if (!url || !secret) { setReminderStatus("Enter both the web app URL and the secret.", true); return; }
+    localStorage.setItem(LS_REMINDER_CFG_KEY, JSON.stringify({ url, secret }));
+    setBusy(true);
     setReminderStatus("Sending test email…");
-    const result = await postToReminders("test");
-    setReminderStatus(result.message, result.ok === false);
+    const result = await sendToReminders("test");
+    setBusy(false);
+    setReminderStatus((result.ok ? "✓ " : "✗ ") + result.message, !result.ok);
   });
 
   document.getElementById("btn-reminder-off").addEventListener("click", () => {

@@ -13,7 +13,7 @@
 
 // ----------------------------- SETTINGS --------------------------------
 const EMAIL = 'dosadchuk@binghamton.edu';   // where the digest is sent
-const SECRET = 'DanNerdy12!'; // must match the "Secret" you type into the site
+const SECRET = 'CHANGE-ME-TO-SOMETHING-RANDOM'; // must match the "Secret" you type into the site
 const TIMEZONE = 'America/New_York';        // used to decide what "today" is
 const SEND_HOUR = 7;                        // digest goes out around 7am (runs within that hour)
 const INCLUDE_READINGS = false;             // true = also nag about unchecked readings (that's a LOT of email)
@@ -35,43 +35,60 @@ function setup() {
     .create();
 }
 
-/** The website talks to this. */
+/**
+ * The website talks to this. The site sends the request "blind" (browsers won't
+ * let it read the reply), so every outcome is recorded and the site reads it
+ * back through doGet below to confirm what really happened.
+ */
 function doPost(e) {
   var lock = LockService.getScriptLock();
+  var action = '?';
+  var out;
   try {
     lock.waitLock(10000);
     var body = JSON.parse(e.postData.contents);
+    action = body.action || '?';
 
     if (body.token !== SECRET) {
-      return json_({ ok: false, message: 'Wrong secret — check it matches the SECRET in Code.gs.' });
-    }
-
-    if (body.action === 'sync' || body.action === 'test') {
+      out = { ok: false, message: 'Wrong secret — the secret on the site must match SECRET in Code.gs exactly.' };
+    } else if (action === 'sync' || action === 'test') {
       saveSnapshot_({
         tasks: body.tasks || [],
         done: body.done || [],
         savedAt: new Date().toISOString(),
       });
+      if (action === 'sync') {
+        out = { ok: true, message: 'Synced ' + (body.tasks || []).length + ' tasks (' + (body.done || []).length + ' checked off).' };
+      } else {
+        sendDigest_(true);
+        out = { ok: true, message: 'Test email sent to ' + EMAIL + ' — check your inbox (and spam, the first time).' };
+      }
+    } else {
+      out = { ok: false, message: 'Unknown action.' };
     }
-
-    if (body.action === 'sync') {
-      return json_({ ok: true, message: 'Synced ' + (body.tasks || []).length + ' tasks (' + (body.done || []).length + ' checked off).' });
-    }
-    if (body.action === 'test') {
-      sendDigest_(true);
-      return json_({ ok: true, message: 'Test email sent to ' + EMAIL + '. Check your inbox (and spam, the first time).' });
-    }
-    return json_({ ok: false, message: 'Unknown action.' });
   } catch (err) {
-    return json_({ ok: false, message: 'Script error: ' + err });
+    out = { ok: false, message: 'Script error: ' + err };
   } finally {
     try { lock.releaseLock(); } catch (ignore) {}
   }
+  try { record_(action, out); } catch (ignore) {}
+  return json_(out);
 }
 
-/** Opening the web app URL in a browser shows this, handy for checking the deploy worked. */
-function doGet() {
-  return json_({ ok: true, message: 'The Binder reminder service is running.' });
+/**
+ * Status check. With ?callback=name it answers as JSONP, which is how the site
+ * reads it (works from any website, no CORS needed). Opening the web app URL
+ * directly in a browser tab also shows this as plain JSON.
+ */
+function doGet(e) {
+  var status = status_();
+  var cb = e && e.parameter && e.parameter.callback;
+  if (cb && /^[A-Za-z_$][A-Za-z0-9_$]*$/.test(cb)) {
+    return ContentService
+      .createTextOutput(cb + '(' + JSON.stringify(status) + ');')
+      .setMimeType(ContentService.MimeType.JAVASCRIPT);
+  }
+  return json_(status);
 }
 
 /** Runs on the daily trigger. */
@@ -168,6 +185,37 @@ function sendDigest_(isTest) {
     body: text.join('\n'),
     htmlBody: html.join(''),
   });
+}
+
+function record_(action, out) {
+  var props = PropertiesService.getScriptProperties();
+  var seq = Number(props.getProperty('seq') || 0) + 1;
+  props.setProperties({
+    seq: String(seq),
+    last_result: JSON.stringify({ seq: seq, at: new Date().toISOString(), action: action, ok: !!out.ok, message: out.message }),
+  });
+}
+
+function status_() {
+  var props = PropertiesService.getScriptProperties();
+  var snap = loadSnapshot_();
+  var last = null;
+  try { last = JSON.parse(props.getProperty('last_result') || 'null'); } catch (err) {}
+  var trigger = null;
+  try {
+    trigger = ScriptApp.getProjectTriggers().some(function (t) { return t.getHandlerFunction() === 'sendDailyDigest'; });
+  } catch (err) {}
+  return {
+    ok: true,
+    message: 'The Binder reminder service is running.',
+    version: 2,
+    seq: Number(props.getProperty('seq') || 0),
+    savedAt: snap ? snap.savedAt : null,
+    taskCount: snap ? snap.tasks.length : 0,
+    doneCount: snap ? snap.done.length : 0,
+    dailyTrigger: trigger,
+    last: last,
+  };
 }
 
 function esc_(s) {

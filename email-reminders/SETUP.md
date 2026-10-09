@@ -35,12 +35,31 @@ uses a free Google Apps Script that lives in your Google account.
    - **Who has access:** Anyone
    Click **Deploy** and **copy the Web app URL** (ends in `/exec`).
 
-6. Open The Binder → **Edit** tab → **Email reminders**.
+6. **Check the deployment works:** paste the Web app URL into a new browser tab. You
+   should see text like `{"ok":true,"message":"The Binder reminder service is running.","version":2,...}`.
+   - A Google sign-in page instead? "Who has access" isn't set to **Anyone** — redeploy
+     (see "Changed Code.gs" below) with that fixed.
+   - `"version":2` missing, or an error? You're running an older Code.gs — paste the
+     newest one and redeploy.
 
-7. Paste the URL and your secret → **Save & sync** → then **Send test email**.
-   Check your inbox (and spam folder the first time). 
+7. Open The Binder → **Edit** tab → **Email reminders**, paste the URL and your secret →
+   **Save & sync**. The status line should turn into **✓ Synced N tasks**. Then click
+   **Send test email** and check your inbox (and spam folder the first time).
 
 After that it's automatic: every check-off, edit, or new task syncs in the background.
+The site confirms with your script that each sync actually arrived, and if one fails
+it says so in red and keeps retrying (every ~45 seconds, when you return to the tab, and
+when your connection comes back).
+
+## If "Save & sync" shows a red message
+
+| Message says | What it means / fix |
+|---|---|
+| **Couldn't reach your script** | URL is wrong (must be the **Web app** URL ending in `/exec`, not the editor URL), or "Who has access" isn't **Anyone**, or Code.gs is an old version. Do step 6. |
+| **Wrong secret** | The secret on the site doesn't exactly match `SECRET` in Code.gs (watch for extra spaces). Fix one so they match, then redeploy if you changed Code.gs. |
+| **Sent, but the script never recorded it** | The URL belongs to a different/old deployment than the code you edited. Deploy → Manage deployments → pencil → **New version** → Deploy. |
+| **Script error: …** | Copy the message to me. It's coming from inside the script (often a permissions prompt you haven't accepted yet — run `setup` from the editor again). |
+| ✓ Synced, but **⚠ The daily 7am email isn't scheduled yet** | You skipped step 4. Run `setup` once from the editor. |
 
 ## Good to know
 
@@ -50,7 +69,8 @@ After that it's automatic: every check-off, edit, or new task syncs in the backg
 - **Emails only know what the site has synced.** The site syncs when you open it or change
   something, so if you check something off on your phone, your phone's browser needs the
   URL + secret entered too (the settings are stored per browser, as are your check-offs).
-- **Changed `Code.gs` later?** Deploy → Manage deployments → pencil icon → Version:
+- **Changed `Code.gs` later?** Saving the file is NOT enough — the live web app keeps running
+  the old version until you redeploy: Deploy → Manage deployments → pencil icon → Version:
   **New version** → Deploy. (The URL stays the same.)
 - **Change the time or email:** edit `SEND_HOUR` / `EMAIL` at the top of `Code.gs`, then run
   `setup` again (it replaces the old trigger).
