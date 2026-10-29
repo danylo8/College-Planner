@@ -73,9 +73,9 @@ const EVENTS = [
   { course: "futures", date: "2026-08-20", type: "assignment", title: "Start-of-Semester Survey due", detail: "Source Project survey, due before class." },
   { course: "futures", date: "2026-08-20", type: "reading", title: "Thomas More, Utopia (1516), pp. 7–47 (Letters and Book 1)", detail: "Unit: Inventing Utopia." },
   { course: "futures", date: "2026-08-25", type: "reading", title: "Thomas More, Utopia (1516), pp. 48–113 (Book 2)", detail: "Also: George Orwell, \"Can Socialists Be Happy?\" (1943)." },
-  { course: "futures", date: "2026-08-27", type: "reading", title: "Mary Shelley, Frankenstein (1818), Vol. 1 (pp. 3–77)", detail: "Unit: Origins of Science Fiction." },
-  { course: "futures", date: "2026-09-01", type: "reading", title: "Mary Shelley, Frankenstein (1818), Vol. 2 (pp. 81–141)", detail: "Also: Darko Suvin, \"On the Poetics of the Science Fiction Genre\" (1972)." },
-  { course: "futures", date: "2026-09-03", type: "reading", title: "Mary Shelley, Frankenstein (1818), Vol. 3 (pp. 145–216)", detail: "Also: Georges Méliès, A Trip to the Moon (1902)." },
+  { course: "futures", date: "2026-08-27", type: "reading", title: "Mary Shelley, Frankenstein (1818), Vol. 1 (pp. 5–62)", detail: "Unit: Origins of Science Fiction." },
+  { course: "futures", date: "2026-09-01", type: "reading", title: "Mary Shelley, Frankenstein (1818), Vol. 2 (pp. 63–111)", detail: "Also: Darko Suvin, \"On the Poetics of the Science Fiction Genre\" (1972)." },
+  { course: "futures", date: "2026-09-03", type: "reading", title: "Mary Shelley, Frankenstein (1818), Vol. 3 (pp. 113–172)", detail: "Also: Georges Méliès, A Trip to the Moon (1902)." },
   { course: "futures", date: "2026-09-08", type: "note", title: "Monday classes meet (not Tuesday)", detail: "Schedule quirk — attend as a Monday." },
   { course: "futures", date: "2026-09-10", type: "reading", title: "Chris Jennings, Paradise Now, Ch. 2 \"New Harmony\"", detail: "Unit: Ideal Societies. Also: Robert Owen, \"A Sketch of Some of the Errors and Evils Arising from the Past and Present State of Society\" (1817)." },
   { course: "futures", date: "2026-09-13", type: "assignment", title: "Paper 1 due", detail: "5 pages incl. MLA bibliography. Due by 11:59pm." },
@@ -207,8 +207,8 @@ const EVENTS = [
   { course: "psyc", date: "2026-09-14", type: "note", title: "Panic", detail: "Class #11." },
   { course: "psyc", date: "2026-09-16", type: "reading", title: "Generalized Anxiety Disorder", detail: "Class #12. Reading: Craighead 4." },
   { course: "psyc", date: "2026-09-18", type: "note", title: "Generalized Anxiety Disorder", detail: "Class #13." },
-  { course: "psyc", date: "2026-09-23", type: "note", title: "Generalized Anxiety Disorder", detail: "Class #14." },
-  { course: "psyc", date: "2026-09-25", type: "exam", title: "Exam 1", detail: "Class #15. 25% of final grade." },
+  { course: "psyc", date: "2026-09-25", type: "note", title: "Generalized Anxiety Disorder", detail: "Class #15." },
+  { course: "psyc", date: "2026-09-23", type: "exam", title: "Exam 1", detail: "Class #14. 25% of final grade." },
   { course: "psyc", date: "2026-09-28", type: "reading", title: "Obsessive Compulsive Disorder", detail: "Class #16. Reading: Craighead 5, Oltmanns 8." },
   { course: "psyc", date: "2026-09-30", type: "note", title: "Obsessive Compulsive Disorder", detail: "Class #17." },
   { course: "psyc", date: "2026-10-02", type: "reading", title: "Social Phobia", detail: "Class #18. Reading: Craighead 2." },
@@ -219,8 +219,8 @@ const EVENTS = [
   { course: "psyc", date: "2026-10-21", type: "reading", title: "Depression", detail: "Class #23. Reading: Craighead 7." },
   { course: "psyc", date: "2026-10-23", type: "reading", title: "Substance Use and Addiction", detail: "Class #24. Reading: Craighead 11." },
   { course: "psyc", date: "2026-10-26", type: "note", title: "Substance Use and Addiction", detail: "Class #25." },
-  { course: "psyc", date: "2026-10-28", type: "reading", title: "Substance Use and Addiction", detail: "Class #26. Reading: Oltmanns 19." },
-  { course: "psyc", date: "2026-10-30", type: "exam", title: "Exam 2", detail: "Class #27. 25% of final grade." },
+  { course: "psyc", date: "2026-10-30", type: "reading", title: "Substance Use and Addiction", detail: "Class #27. Reading: Oltmanns 19." },
+  { course: "psyc", date: "2026-10-28", type: "exam", title: "Exam 2", detail: "Class #26. 25% of final grade." },
   { course: "psyc", date: "2026-11-02", type: "reading", title: "Eating Disorders I", detail: "Class #28. Reading: Craighead 12." },
   { course: "psyc", date: "2026-11-04", type: "reading", title: "Eating Disorders I", detail: "Class #29. Reading: Craighead 8, Oltmanns 13." },
   { course: "psyc", date: "2026-11-06", type: "reading", title: "Eating Disorders II", detail: "Class #30. Reading: Oltmanns 14." },
@@ -228,8 +228,8 @@ const EVENTS = [
   { course: "psyc", date: "2026-11-11", type: "reading", title: "Schizophrenia II", detail: "Class #32. Reading: Oltmanns 3." },
   { course: "psyc", date: "2026-11-13", type: "note", title: "Schizophrenia III", detail: "Class #33." },
   { course: "psyc", date: "2026-11-16", type: "reading", title: "Bipolar Disorder/Hypomania", detail: "Class #34. Reading: Oltmanns 5." },
-  { course: "psyc", date: "2026-11-18", type: "note", title: "Bipolar Disorder/Hypomania", detail: "Class #35." },
-  { course: "psyc", date: "2026-11-20", type: "exam", title: "Exam 3", detail: "Class #36. 25% of final grade." },
+  { course: "psyc", date: "2026-11-20", type: "note", title: "Bipolar Disorder/Hypomania", detail: "Class #36." },
+  { course: "psyc", date: "2026-11-18", type: "exam", title: "Exam 3", detail: "Class #35. 25% of final grade." },
   { course: "psyc", date: "2026-11-23", type: "reading", title: "Posttraumatic Stress Disorder I*", detail: "Class #37. Reading: Craighead 6. *Potentially triggering material — attendance optional per syllabus." },
   { course: "psyc", date: "2026-11-24", type: "note", title: "Class meets (Thanksgiving makeup)", detail: "Class #38." },
   { course: "psyc", date: "2026-11-24", type: "reading", title: "Posttraumatic Stress Disorder II*", detail: "Class #38. Reading: Oltmanns 10. *Potentially triggering material — attendance optional per syllabus." },
@@ -237,8 +237,82 @@ const EVENTS = [
   { course: "psyc", date: "2026-12-02", type: "reading", title: "Personality Disorder — Clusters A, B, & C (cont.)", detail: "Class #40. Reading: Craighead 14." },
   { course: "psyc", date: "2026-12-04", type: "reading", title: "Sexual Paraphilias*", detail: "Class #41. Reading: Oltmanns 22. *Potentially triggering material — attendance optional per syllabus." },
   { course: "psyc", date: "2026-12-07", type: "note", title: "Sexual Paraphilias/Review", detail: "Class #42." },
-  { course: "psyc", date: "2026-12-13", type: "exam", title: "Final Exam — Finals Week (exact date TBA)", detail: "Held sometime Dec 10–16; update once the Registrar publishes the schedule." },
+  { course: "psyc", date: "2026-12-14", type: "exam", time: "12:50", title: "Final Exam — 12:50–2:50pm, LH 8", detail: "Class #43. Date, time and room are from the syllabus schedule table; the syllabus footer also says the Registrar will confirm the final-exam schedule, so double-check." },
 ];
 
 // Which events count toward the "planner" (actionable to-dos) by default
 const PLANNER_TYPES = ["assignment", "exam", "reading"];
+
+// ---------------------------------------------------------------
+// Grading schemes — weights and letter cutoffs transcribed from each syllabus.
+// (Your scores, exclusions and edits are stored in your browser, not here.)
+// Component weights are % of the course grade; each course adds up to 100.
+// Item "match" = start of the calendar event title, used only to show a due date.
+// ---------------------------------------------------------------
+
+// Binghamton GPA points per credit hour (4.0 scale with +/- grades).
+// D- is not on Binghamton's published list; 0.667 is a placeholder you can edit.
+const GRADE_POINTS = {
+  "A": 4.0, "A-": 3.667, "B+": 3.333, "B": 3.0, "B-": 2.667,
+  "C+": 2.333, "C": 2.0, "C-": 1.667, "D+": 1.333, "D": 1.0, "D-": 0.667, "F": 0,
+};
+
+const PENPAL_DATES = [
+  "2026-08-20", "2026-08-27", "2026-09-03", "2026-09-10", "2026-09-17", "2026-09-24", "2026-10-01",
+  "2026-10-08", "2026-10-22", "2026-10-29", "2026-11-05", "2026-11-12", "2026-11-19", "2026-12-03",
+];
+
+const GRADING = {
+  futures: {
+    credits: 4,
+    scaleNote: "Syllabus gives no letter scale — using the standard +/- cutoffs. Edit if your instructor's differ.",
+    scale: [["A", 93], ["A-", 90], ["B+", 87], ["B", 83], ["B-", 80], ["C+", 77], ["C", 73], ["C-", 70], ["D+", 67], ["D", 63], ["D-", 60], ["F", 0]],
+    components: [
+      { id: "participation", name: "Participation & Preparation", weight: 10, items: [{ id: "main", label: "Participation & Preparation (incl. reading quizzes)" }] },
+      { id: "penpals", name: "Pen Pal letters", weight: 15, note: "Each letter is graded on its own; the average counts for 15%.",
+        items: PENPAL_DATES.map((d, i) => ({ id: "L" + (i + 1), label: "Letter " + (i + 1), date: d })) },
+      { id: "paper1", name: "Paper 1 — first draft", weight: 10, items: [{ id: "main", label: "Paper 1 (first draft)", match: "Paper 1 due" }] },
+      { id: "paper1rw", name: "Paper 1 — rewrite", weight: 5, items: [{ id: "main", label: "Paper 1 (rewrite)", match: "Rewrite of Paper 1" }] },
+      { id: "paper2", name: "Paper 2", weight: 15, items: [{ id: "main", label: "Paper 2", match: "Paper 2 due" }] },
+      { id: "explore", name: "Exploratory Paper & Annotated Bibliography", weight: 25, items: [{ id: "main", label: "Exploratory Paper & Annotated Bibliography", match: "Exploratory Paper" }] },
+      { id: "midterm", name: "Passage ID midterm", weight: 10, items: [{ id: "main", label: "Passage Identification midterm", match: "Passage Identification Midterm" }] },
+      { id: "final", name: "Passage ID final exam", weight: 10, items: [{ id: "main", label: "Passage Identification final", match: "Final Exam" }] },
+    ],
+  },
+  aaas: {
+    credits: 4,
+    scaleNote: "From the syllabus grade scale.",
+    scale: [["A", 93], ["A-", 90], ["B+", 87], ["B", 83], ["B-", 80], ["C+", 77], ["C", 73], ["C-", 70], ["D+", 67], ["D", 63], ["D-", 60], ["F", 0]],
+    components: [
+      { id: "participation", name: "Class participation & discussion", weight: 20, items: [{ id: "main", label: "Class participation & discussion" }] },
+      { id: "quiz", name: "Quiz", weight: 10, items: [{ id: "main", label: "Quiz", match: "Quiz" }] },
+      { id: "midterm", name: "Short midterm paper", weight: 20, items: [{ id: "main", label: "Short midterm paper (4–5 pp.)", match: "Short Midterm Paper" }] },
+      { id: "digital", name: "Digital content creation", weight: 20, items: [{ id: "main", label: "Digital content creation", match: "Digital Content Creation" }] },
+      { id: "presentation", name: "Presentation", weight: 10, items: [{ id: "main", label: "Presentation (Nov 11–20)" }] },
+      { id: "final", name: "Final paper", weight: 20, items: [{ id: "main", label: "Final paper (8–10 pp.)", match: "Final Paper due" }] },
+    ],
+  },
+  plsc: {
+    credits: 4,
+    scaleNote: "From the syllabus (no D+/D-; D = 60–69). A score like 92.6 counts as A- (cutoffs are minimums).",
+    scale: [["A", 93], ["A-", 90], ["B+", 87], ["B", 83], ["B-", 80], ["C+", 77], ["C", 73], ["C-", 70], ["D", 60], ["F", 0]],
+    components: [
+      { id: "exam1", name: "Exam I", weight: 27, items: [{ id: "main", label: "Exam I", match: "Exam I" }] },
+      { id: "exam2", name: "Exam 2", weight: 27, items: [{ id: "main", label: "Exam 2", match: "Exam 2" }] },
+      { id: "exam3", name: "Exam #3", weight: 27, items: [{ id: "main", label: "Exam #3", match: "Exam #3" }] },
+      { id: "discussion", name: "Discussion section attendance & participation", weight: 19, items: [{ id: "main", label: "Discussion section attendance & participation" }] },
+    ],
+  },
+  psyc: {
+    credits: 4,
+    scaleNote: "From the syllabus (no D+/D-; D = 65–69.9). Cutoffs are firm: 92.9 is an A-, not an A.",
+    scale: [["A", 93], ["A-", 90], ["B+", 86], ["B", 83], ["B-", 80], ["C+", 76], ["C", 73], ["C-", 70], ["D", 65], ["F", 0]],
+    bonus: { label: "Knowledge Check bonus points", max: 3, note: "Added to your final grade: 95–100% of checks = up to 3, 90–94.9% = 2, 80–90% = 1." },
+    components: [
+      { id: "exam1", name: "Exam 1", weight: 25, note: "Exams are out of 100 and can include extra-credit questions, so a score over 100 is fine.", items: [{ id: "main", label: "Exam 1", match: "Exam 1" }] },
+      { id: "exam2", name: "Exam 2", weight: 25, items: [{ id: "main", label: "Exam 2", match: "Exam 2" }] },
+      { id: "exam3", name: "Exam 3", weight: 25, items: [{ id: "main", label: "Exam 3", match: "Exam 3" }] },
+      { id: "exam4", name: "Final exam (Exam 4)", weight: 25, items: [{ id: "main", label: "Final exam", match: "Final Exam" }] },
+    ],
+  },
+};

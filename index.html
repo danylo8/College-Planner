@@ -7,7 +7,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,700;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=3">
+<link rel="stylesheet" href="style.css?v=6">
 </head>
 <body>
 
@@ -37,6 +37,7 @@
   <button class="view-tab active" data-view="calendar">Calendar</button>
   <button class="view-tab" data-view="list">List</button>
   <button class="view-tab" data-view="planner">Planner</button>
+  <button class="view-tab" data-view="grades">Grades</button>
   <button class="view-tab" data-view="edit">Edit</button>
 </nav>
 
@@ -88,6 +89,11 @@
     </div>
   </section>
 
+  <!-- GRADES VIEW -->
+  <section id="view-grades" class="view" hidden>
+    <div id="grades-root"></div>
+  </section>
+
   <!-- EDIT VIEW -->
   <section id="view-edit" class="view" hidden>
     <div class="edit-header">
@@ -108,7 +114,7 @@
         <button type="button" id="btn-reminder-off" class="btn btn-ghost btn-small">Turn off</button>
       </div>
       <div id="reminder-status" class="reminder-status" aria-live="polite"></div>
-      <div class="reminder-version">Site build v3 · if you ever see “couldn't read the reply”, this page is an old cached copy — hard refresh (Cmd/Ctrl+Shift+R).</div>
+      <div class="reminder-version">Site build v6 · if you ever see “couldn't read the reply”, this page is an old cached copy — hard refresh (Cmd/Ctrl+Shift+R).</div>
     </div>
 
     <h3>Courses</h3>
@@ -141,7 +147,8 @@
 </main>
 
 
-<script src="data.js?v=3"></script>
-<script src="app.js?v=3"></script>
+<script src="data.js?v=6"></script>
+<script src="grades.js?v=6"></script>
+<script src="app.js?v=6"></script>
 </body>
 </html>

@@ -431,6 +431,7 @@ function renderActiveView() {
   if (state.view === "calendar") { renderCalendar(); renderDayDetail(); }
   else if (state.view === "list") renderList();
   else if (state.view === "planner") renderPlanner();
+  else if (state.view === "grades") renderGrades();
   else if (state.view === "edit") renderEditView();
 }
 
@@ -656,26 +657,45 @@ const sleep = (ms) => new Promise(r => setTimeout(r, ms));
 
 // Read the script's status via JSONP (a <script> tag). Unlike fetch, this works
 // from any website without CORS, and it's how we confirm the script really got
-// what we sent. Rejects on network failure or if the reply isn't JSONP
-// (wrong URL, deployment not set to "Anyone", or an old Code.gs).
+// what we sent. Rejects with err.kind =
+//   "network" - the browser couldn't load the URL at all
+//   "parse"   - it loaded, but wasn't a status reply (typically Google's HTML
+//               sign-in page, or an old Code.gs)
+//   "timeout" - no answer within timeoutMs
 function jsonpGet(baseUrl, timeoutMs = 7000) {
   return new Promise((resolve, reject) => {
     const cb = "__binderCb" + Date.now().toString(36) + Math.floor(Math.random() * 1e6);
     const script = document.createElement("script");
     let timer;
-    const cleanup = () => { clearTimeout(timer); delete window[cb]; script.remove(); };
+    const fail = (kind) => { cleanup(); reject(Object.assign(new Error(kind), { kind })); };
+    // A cross-origin script that isn't valid JavaScript (e.g. an HTML sign-in page)
+    // surfaces only as a generic "Script error." on window.
+    const onWinError = (e) => { if (e && e.message === "Script error.") fail("parse"); };
+    const cleanup = () => {
+      clearTimeout(timer);
+      window.removeEventListener("error", onWinError);
+      delete window[cb];
+      script.remove();
+    };
+    window.addEventListener("error", onWinError);
     window[cb] = (data) => { cleanup(); resolve(data); };
-    script.onerror = () => { cleanup(); reject(new Error("network")); };
-    timer = setTimeout(() => { cleanup(); reject(new Error("timeout")); }, timeoutMs);
+    script.onerror = () => fail("network");
+    timer = setTimeout(() => fail("timeout"), timeoutMs);
     script.src = `${baseUrl}${baseUrl.includes("?") ? "&" : "?"}callback=${cb}&_=${Date.now()}`;
     document.head.appendChild(script);
   });
 }
 
-const UNREACHABLE_HELP =
-  "Couldn't reach your script. Check that (1) the URL is the Web app URL ending in /exec, " +
-  "(2) the deployment's \"Who has access\" is set to Anyone, and (3) you pasted the newest Code.gs " +
-  "and redeployed (Deploy → Manage deployments → pencil → New version).";
+function unreachableMessage(kind) {
+  const why = {
+    network: "The browser couldn't load that URL at all (wrong URL, no internet, or a content blocker).",
+    parse: "That URL answered, but with a web page instead of the status reply — almost always Google's sign-in page (the deployment isn't open to everyone) or an old Code.gs.",
+    timeout: "That URL didn't answer within 7 seconds.",
+  }[kind] || "No usable reply.";
+  return `Couldn't reach your script. ${why} Test: open the URL in a private/incognito window — it must show "version":2 there too. ` +
+    `If it shows a sign-in page, redeploy with "Who has access" = Anyone (or create the script under a personal Gmail). ` +
+    `Also check the URL ends in /exec and that you redeployed the newest Code.gs. [${kind || "unknown"}]`;
+}
 
 // Sends a request, then asks the script what it recorded.
 // Returns { ok: boolean, message }. ok is only true if the script confirmed it.
@@ -685,7 +705,7 @@ async function sendToReminders(action) {
 
   let before;
   try { before = await jsonpGet(cfg.url); }
-  catch (err) { return { ok: false, message: UNREACHABLE_HELP }; }
+  catch (err) { return { ok: false, message: unreachableMessage(err.kind) }; }
 
   const body = JSON.stringify({ token: cfg.secret, action, ...buildReminderPayload() });
   try {

@@ -35,7 +35,9 @@ uses a free Google Apps Script that lives in your Google account.
    - **Who has access:** Anyone
    Click **Deploy** and **copy the Web app URL** (ends in `/exec`).
 
-6. **Check the deployment works:** paste the Web app URL into a new browser tab. You
+6. **Check the deployment works — in a PRIVATE/INCOGNITO window.** (A normal tab doesn't
+   prove anything: you're signed in as the script's owner, so it works for you even when
+   it's locked to everyone else, including the website.) Paste the Web app URL there. You
    should see text like `{"ok":true,"message":"The Binder reminder service is running.","version":2,...}`.
    - A Google sign-in page instead? "Who has access" isn't set to **Anyone** — redeploy
      (see "Changed Code.gs" below) with that fixed.
@@ -55,7 +57,9 @@ when your connection comes back).
 
 | Message says | What it means / fix |
 |---|---|
-| **Couldn't reach your script** | URL is wrong (must be the **Web app** URL ending in `/exec`, not the editor URL), or "Who has access" isn't **Anyone**, or Code.gs is an old version. Do step 6. |
+| **Couldn't reach your script … [parse]** | The URL answered with a web page, almost always Google's sign-in page: the deployment isn't open to everyone. Redeploy with "Who has access" = **Anyone**. If your Binghamton account only offers "Anyone within Binghamton University", create the script under a personal Gmail instead (emails still go to your Binghamton address). |
+| **Couldn't reach your script … [network]** | The browser couldn't load the URL at all: typo in the URL, no internet, or a content blocker. The URL must be the **Web app** URL ending in `/exec`. |
+| **Couldn't reach your script … [timeout]** | No answer in 7 seconds: usually an old Code.gs (redeploy as a New version) or a flaky connection; try again. |
 | **Wrong secret** | The secret on the site doesn't exactly match `SECRET` in Code.gs (watch for extra spaces). Fix one so they match, then redeploy if you changed Code.gs. |
 | **Sent, but the script never recorded it** | The URL belongs to a different/old deployment than the code you edited. Deploy → Manage deployments → pencil → **New version** → Deploy. |
 | **Script error: …** | Copy the message to me. It's coming from inside the script (often a permissions prompt you haven't accepted yet — run `setup` from the editor again). |

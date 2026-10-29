@@ -13,7 +13,7 @@
 
 // ----------------------------- SETTINGS --------------------------------
 const EMAIL = 'dosadchuk@binghamton.edu';   // where the digest is sent
-const SECRET = 'DanNerdy12!'; // must match the "Secret" you type into the site
+const SECRET = 'CHANGE-ME-TO-SOMETHING-RANDOM'; // must match the "Secret" you type into the site
 const TIMEZONE = 'America/New_York';        // used to decide what "today" is
 const SEND_HOUR = 7;                        // digest goes out around 7am (runs within that hour)
 const INCLUDE_READINGS = false;             // true = also nag about unchecked readings (that's a LOT of email)

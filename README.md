@@ -15,6 +15,13 @@ built from the syllabi. Pure HTML/CSS/JS — no build step, no server.
   Each item shows its reading citation (e.g. "Craighead 3") right under the
   title, and a "Course info & required textbooks" panel above the calendar
   spells out what those citations refer to
+- **Grades tab**: enter scores for every graded item (papers, exams, quizzes, pen pal
+  letters, participation...) using each syllabus's real weights. It shows your current
+  grade and letter for each course, what you'd finish with if the rest scores 0%–100%,
+  and "what do I need on the rest to get an A-?". Uncheck any item to leave it out
+  of a course grade, uncheck "Counts toward GPA" on a course (pass/fail, audit), and edit
+  weights, credits, letter cutoffs and grade points. Semester GPA is credit-weighted, with an
+  optional cumulative GPA if you enter your prior GPA and credits. Saved in your browser only.
 - **Daily email reminders**: one morning email listing everything due today or
   overdue that you haven't checked off. Needs a one-time ~5 min setup (a free
   Google Apps Script) — see `email-reminders/SETUP.md`, then paste the URL +
@@ -45,8 +52,8 @@ alongside the code.
    **Create repository**.
 3. On the new repo's page, click **"uploading an existing file"** (or
    **Add file → Upload files**).
-4. Drag in the four site files: `index.html`, `style.css`, `app.js`,
-   `data.js`. (The `syllabi/` folder is just reference material — you can
+4. Drag in the five site files: `index.html`, `style.css`, `app.js`,
+   `grades.js`, `data.js`. (The `syllabi/` folder is just reference material — you can
    skip it or upload it too, it won't affect the live site either way.)
    Commit the upload.
 5. Go to the repo's **Settings → Pages** (left sidebar).
@@ -95,7 +102,8 @@ verifying yourself once the semester is underway:
 - **Futures Past final exam** and **PLSC 113 Exam #3** — both syllabi say
   "date TBA." I put placeholder dates near the end of finals week so they
   show up on the calendar; update them in the **Edit** tab once announced.
-- **PSYC 223 final exam** — "during Finals Week (Dec 10–16), exact date TBA."
-  Same placeholder treatment.
+- **PSYC 223 final exam** — the schedule table lists **Mon Dec 14, 12:50–2:50pm,
+  LH 8**, but the footnote still says the Registrar will announce the final
+  schedule. I used the table; confirm it once the Registrar posts.
 - Everything else (paper due dates, exam dates, breaks, schedule quirks like
   "Monday classes meet") is transcribed directly from the syllabi as posted.
